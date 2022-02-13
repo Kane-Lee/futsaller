@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:futsaller/Pages/playPage.dart';
+import 'package:geolocator/geolocator.dart';
 
 class PlayScreen extends StatefulWidget {
   @override
@@ -60,6 +61,15 @@ class _PlayScreenState extends State<PlayScreen> {
                 },
               ),
             ));
+  }
+
+  void getLocation() async{
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+    print(position);
+  }
+
+  void getLocationPermission() async{
+    LocationPermission permission = await Geolocator.requestPermission();
   }
 
   @override
@@ -132,7 +142,9 @@ class _PlayScreenState extends State<PlayScreen> {
               ),
               SizedBox(width: 10),
               TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    getLocationPermission();
+                  },
                   child: Text(
                     "안필드",
                     style: TextStyle(
@@ -144,10 +156,12 @@ class _PlayScreenState extends State<PlayScreen> {
           ])),
           Column(children: [
             ElevatedButton(
-              onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => PlayPage(gameTime: playtime))),
+              onPressed: () {
+                Navigator.push(context,MaterialPageRoute(builder: (context) => PlayPage(gameTime: playtime)));
+                getLocation();
+
+
+                },
               child: Text(
                 "KICK OFF",
                 style: TextStyle(fontSize: 18),
