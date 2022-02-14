@@ -7,13 +7,16 @@ import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
+
 class PlayPage extends StatefulWidget {
   final int gameTime;
+  final double playerLatitude;
+  final double playerLongitude;
 
-  const PlayPage({required this.gameTime});
+  const PlayPage({required this.gameTime, required this.playerLatitude, required this.playerLongitude});
 
   @override
-  State<PlayPage> createState() => _PlayPageState(initialTime: gameTime);
+  State<PlayPage> createState() => _PlayPageState(initialTime: gameTime,initialLatitude: playerLatitude, initialLongitude: playerLongitude);
 }
 
 class _PlayPageState extends State<PlayPage> {
@@ -24,12 +27,13 @@ class _PlayPageState extends State<PlayPage> {
   // List<LatLng> route = [];
 
 
-  static final CameraPosition _kGooglePlex = CameraPosition(
-      target: LatLng(37.42796133580664, -122.085749655962), zoom: 15);
+
 
   final int initialTime;
+  final double initialLatitude;
+  final double initialLongitude;
 
-  _PlayPageState({required this.initialTime});
+  _PlayPageState({required this.initialTime, required this.initialLatitude, required this.initialLongitude});
 
   bool gameIsPlaying = true;
   void _showCupertinoAlert() {
@@ -140,7 +144,8 @@ class _PlayPageState extends State<PlayPage> {
                     // polylines: polyline,
                     myLocationButtonEnabled: false,
                     mapType: MapType.normal,
-                    initialCameraPosition: _kGooglePlex,
+                    initialCameraPosition: CameraPosition(
+                        target: LatLng(initialLatitude, initialLongitude), zoom: 15),
                     onMapCreated: (GoogleMapController controller) {
                       _controller.complete(controller);
                     },

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:futsaller/Pages/playPage.dart';
+import 'package:futsaller/location.dart';
 import 'package:geolocator/geolocator.dart';
 
 class PlayScreen extends StatefulWidget {
@@ -11,6 +12,8 @@ class PlayScreen extends StatefulWidget {
 class _PlayScreenState extends State<PlayScreen> {
   int playtime = 15;
   String gameStyle = '풋살';
+  double currentLatitude = 0;
+  double currentLongituge = 0;
 
   void _showPicker(BuildContext ctx) {
     showCupertinoModalPopup(
@@ -20,7 +23,7 @@ class _PlayScreenState extends State<PlayScreen> {
               height: 250,
               child: CupertinoPicker(
                 backgroundColor: Colors.white,
-                itemExtent: 30.0,
+                itemExtent: 40.0,
                 scrollController: FixedExtentScrollController(initialItem: 14),
                 children: [
                   Text('1분'),
@@ -63,13 +66,20 @@ class _PlayScreenState extends State<PlayScreen> {
             ));
   }
 
-  void getLocation() async{
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-    print(position);
+  void getLocation() async {
+    Location location = Location();
+    await location.getCurrentLocation();
+    currentLatitude = location.latitude;
+    currentLongituge = location.longitude;
   }
 
-  void getLocationPermission() async{
-    LocationPermission permission = await Geolocator.requestPermission();
+
+
+
+  @override
+  void initState() {
+    getLocation();
+    super.initState();
   }
 
   @override
@@ -143,7 +153,8 @@ class _PlayScreenState extends State<PlayScreen> {
               SizedBox(width: 10),
               TextButton(
                   onPressed: () {
-                    getLocationPermission();
+                    print(currentLatitude);
+                    print(currentLongituge);
                   },
                   child: Text(
                     "안필드",
@@ -156,12 +167,14 @@ class _PlayScreenState extends State<PlayScreen> {
           ])),
           Column(children: [
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(context,MaterialPageRoute(builder: (context) => PlayPage(gameTime: playtime)));
+              onPressed: (){
                 getLocation();
-
-
-                },
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PlayPage(gameTime: playtime, playerLatitude: currentLatitude, playerLongitude: currentLongituge,)));
+                getLocation();
+              },
               child: Text(
                 "KICK OFF",
                 style: TextStyle(fontSize: 18),
