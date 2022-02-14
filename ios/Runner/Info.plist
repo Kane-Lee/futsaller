@@ -42,6 +42,9 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>위치 정보 권한이 필요합니다.</string>
+
 
 </dict>
 </plist>
