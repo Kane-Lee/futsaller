@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:futsaller/Pages/playPage.dart';
-import 'package:futsaller/location.dart';
+import 'package:futsaller/Location.dart';
 
 class PlayScreen extends StatefulWidget {
   @override
@@ -11,8 +11,8 @@ class PlayScreen extends StatefulWidget {
 class _PlayScreenState extends State<PlayScreen> {
   int playtime = 15;
   String gameStyle = '풋살';
-  double currentLatitude = 0;
-  double currentLongitude = 0;
+  double _currentLatitude = 0;
+  double _currentLongitude = 0;
 
   Location _location = Location();
 
@@ -70,11 +70,11 @@ class _PlayScreenState extends State<PlayScreen> {
   @override
   void initState() async {
     final _position = await _location.getCurrentLocation();
-    currentLatitude = _position.latitude;
-    currentLongitude = _position.longitude;
+    _currentLatitude = _position.latitude;
+    _currentLongitude = _position.longitude;
     print('****** Play screen is initiated ******');
-    print('****** Current Latitude : $currentLatitude');
-    print('****** Current Longitude : $currentLongitude');
+    print('****** Current Latitude : $_currentLatitude');
+    print('****** Current Longitude : $_currentLongitude');
     super.initState();
   }
 
@@ -149,9 +149,9 @@ class _PlayScreenState extends State<PlayScreen> {
               SizedBox(width: 10),
               TextButton(
                   onPressed: () {
-                    print('****** Current Position ******');
-                    print('current latitude : $currentLatitude');
-                    print('current longitude : $currentLongitude');
+                    // print('****** Current Position ******');
+                    // print('current latitude : $_currentLatitude');
+                    // print('current longitude : $_currentLongitude');
                   },
                   child: Text(
                     "안필드",
@@ -169,9 +169,7 @@ class _PlayScreenState extends State<PlayScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => PlayPage(
-                              gameTime: playtime,
-                              playerLatitude: currentLatitude,
-                              playerLongitude: currentLongitude,
+                              gameTime: playtime,currentLatitude: _currentLatitude,currentLongitude: _currentLongitude,
                             )));
               },
               child: Text(

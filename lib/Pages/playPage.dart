@@ -5,38 +5,30 @@ import 'package:futsaller/Pages/gameEndPage.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:futsaller/Location.dart';
 
 class PlayPage extends StatefulWidget {
   final int gameTime;
-  final double playerLatitude;
-  final double playerLongitude;
+  final double currentLatitude;
+  final double currentLongitude;
 
-  const PlayPage(
-      {required this.gameTime,
-      required this.playerLatitude,
-      required this.playerLongitude});
+  const PlayPage({required this.gameTime, required this.currentLatitude, required this.currentLongitude});
 
   @override
-  State<PlayPage> createState() => _PlayPageState(
-      initialTime: gameTime,
-      initialLatitude: playerLatitude,
-      initialLongitude: playerLongitude);
+  State<PlayPage> createState() => _PlayPageState(initialTime: gameTime, initialLatitude: currentLatitude, initialLongitude: currentLongitude);
 }
 
 class _PlayPageState extends State<PlayPage> {
+  _PlayPageState({required this.initialTime, required this.initialLatitude, required this.initialLongitude});
+
   Completer<GoogleMapController> _controller = Completer();
 
-  final int initialTime;
-  final double initialLatitude;
-  final double initialLongitude;
-
-  _PlayPageState(
-      {required this.initialTime,
-      required this.initialLatitude,
-      required this.initialLongitude});
-
+  int initialTime = 0;
+  double initialLatitude;
+  double initialLongitude;
   bool gameIsPlaying = true;
+
+  Location _location = Location();
 
   void _showCupertinoAlert() {
     setState(() {
@@ -73,20 +65,27 @@ class _PlayPageState extends State<PlayPage> {
   final StopWatchTimer _stopWatchTimer = StopWatchTimer(
       mode: StopWatchMode.countDown,
       presetMillisecond: StopWatchTimer.getMilliSecFromSecond(0),
-      onChange: (value) => print('onChange $value'),
-      onChangeRawSecond: (value) => print('onChangeRawSecond $value'),
-      onChangeRawMinute: (value) => print('onChangeRawMinute $value'),
+      // onChange: (value) => print('onChange $value'),
+      // onChangeRawSecond: (value) => print('onChangeRawSecond $value'),
+      // onChangeRawMinute: (value) => print('onChangeRawMinute $value'),
       onEnded: () {
-        print('onEnd');
+        // print('onEnd');
       });
 
   @override
-  void initState() {
-    _stopWatchTimer.rawTime.listen((value) =>
-        print('rawTime $value ${StopWatchTimer.getDisplayTime(value)}'));
-    _stopWatchTimer.minuteTime.listen((value) => print('minuteTime $value'));
-    _stopWatchTimer.secondTime.listen((value) => print('secondTime $value'));
-    _stopWatchTimer.records.listen((value) => print('records $value'));
+  void initState() async {
+    final _position = await _location.getCurrentLocation();
+    initialLatitude = await _position.latitude;
+    initialLongitude = await _position.longitude;
+    // print('current latitude : $initialLatitude');
+    // print('current longitude : $initialLongitude');
+    // test = '초기화 후';
+
+    // _stopWatchTimer.rawTime.listen((value) =>
+    //     print('rawTime $value ${StopWatchTimer.getDisplayTime(value)}'));
+    // _stopWatchTimer.minuteTime.listen((value) => print('minuteTime $value'));
+    // _stopWatchTimer.secondTime.listen((value) => print('secondTime $value'));
+    // _stopWatchTimer.records.listen((value) => print('records $value'));
     _stopWatchTimer.setPresetMinuteTime(initialTime);
     _stopWatchTimer.onExecute.add(StopWatchExecute.start);
     Timer(Duration(minutes: initialTime), () {
@@ -99,11 +98,6 @@ class _PlayPageState extends State<PlayPage> {
   void dispose() async {
     super.dispose();
     await _stopWatchTimer.dispose();
-  }
-
-  void _onMapCreated(GoogleMapController controller) {
-    _mapController = controller;
-    double appendDist;
   }
 
   @override
@@ -148,16 +142,15 @@ class _PlayPageState extends State<PlayPage> {
               Container(
                   height: 200,
                   child: GoogleMap(
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: false,
-                    mapType: MapType.normal,
-                    initialCameraPosition: CameraPosition(
-                        target: LatLng(initialLatitude, initialLongitude),
-                        zoom: 16),
-                    onMapCreated: (GoogleMapController controller) {
-                      _controller.complete(controller);
-                    },
-                  )),
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: false,
+                      mapType: MapType.normal,
+                      initialCameraPosition: CameraPosition(
+                          target: LatLng(initialLatitude, initialLongitude),
+                          zoom: 16),
+                      onMapCreated: (GoogleMapController controller) {
+                        _controller.complete(controller);
+                      })),
               Column(
                 children: [
                   Text('남은 시간',
