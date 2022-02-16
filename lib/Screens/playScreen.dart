@@ -13,7 +13,17 @@ class _PlayScreenState extends State<PlayScreen> {
   int playtime = 15;
   String gameStyle = '풋살';
   double currentLatitude = 0;
-  double currentLongituge = 0;
+  double currentLongitude = 0;
+
+  Location _location = Location();
+
+  // void getLocation() async {
+  //   Location _location = Location();
+  //   _location.getCurrentLocation();
+  //   currentLatitude = _location.latitude;
+  //   currentLongitude = _location.longitude;
+  //
+  // }
 
   void _showPicker(BuildContext ctx) {
     showCupertinoModalPopup(
@@ -66,19 +76,15 @@ class _PlayScreenState extends State<PlayScreen> {
             ));
   }
 
-  void getLocation() async {
-    Location location = Location();
-    await location.getCurrentLocation();
-    currentLatitude = location.latitude;
-    currentLongituge = location.longitude;
-  }
-
-
-
-
   @override
-  void initState() {
-    getLocation();
+  void initState() async {
+    final position = await _location.getCurrentLocation();
+
+    currentLatitude = position.latitude;
+    currentLongitude = position.longitude;
+    print('****** Play screen is initiated ******');
+    print('****** Current Latitude : $currentLatitude');
+    print('****** Current Longitude : $currentLongitude');
     super.initState();
   }
 
@@ -153,8 +159,9 @@ class _PlayScreenState extends State<PlayScreen> {
               SizedBox(width: 10),
               TextButton(
                   onPressed: () {
-                    print(currentLatitude);
-                    print(currentLongituge);
+                    print('****** Current Position ******');
+                    print('current latitude : $currentLatitude');
+                    print('current longitude : $currentLongitude');
                   },
                   child: Text(
                     "안필드",
@@ -167,13 +174,15 @@ class _PlayScreenState extends State<PlayScreen> {
           ])),
           Column(children: [
             ElevatedButton(
-              onPressed: (){
-                getLocation();
+              onPressed: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => PlayPage(gameTime: playtime, playerLatitude: currentLatitude, playerLongitude: currentLongituge,)));
-                getLocation();
+                        builder: (context) => PlayPage(
+                              gameTime: playtime,
+                              playerLatitude: currentLatitude,
+                              playerLongitude: currentLongitude,
+                            )));
               },
               child: Text(
                 "KICK OFF",
