@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:futsaller/Pages/playPage.dart';
 import 'package:futsaller/location.dart';
-import 'package:geolocator/geolocator.dart';
 
 class PlayScreen extends StatefulWidget {
   @override
@@ -16,14 +15,6 @@ class _PlayScreenState extends State<PlayScreen> {
   double currentLongitude = 0;
 
   Location _location = Location();
-
-  // void getLocation() async {
-  //   Location _location = Location();
-  //   _location.getCurrentLocation();
-  //   currentLatitude = _location.latitude;
-  //   currentLongitude = _location.longitude;
-  //
-  // }
 
   void _showPicker(BuildContext ctx) {
     showCupertinoModalPopup(
@@ -78,10 +69,9 @@ class _PlayScreenState extends State<PlayScreen> {
 
   @override
   void initState() async {
-    final position = await _location.getCurrentLocation();
-
-    currentLatitude = position.latitude;
-    currentLongitude = position.longitude;
+    final _position = await _location.getCurrentLocation();
+    currentLatitude = _position.latitude;
+    currentLongitude = _position.longitude;
     print('****** Play screen is initiated ******');
     print('****** Current Latitude : $currentLatitude');
     print('****** Current Longitude : $currentLongitude');

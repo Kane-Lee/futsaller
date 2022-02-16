@@ -5,37 +5,39 @@ import 'package:futsaller/Pages/gameEndPage.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'dart:async';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-
+import 'package:geolocator/geolocator.dart';
 
 class PlayPage extends StatefulWidget {
   final int gameTime;
   final double playerLatitude;
   final double playerLongitude;
 
-  const PlayPage({required this.gameTime, required this.playerLatitude, required this.playerLongitude});
+  const PlayPage(
+      {required this.gameTime,
+      required this.playerLatitude,
+      required this.playerLongitude});
 
   @override
-  State<PlayPage> createState() => _PlayPageState(initialTime: gameTime,initialLatitude: playerLatitude, initialLongitude: playerLongitude);
+  State<PlayPage> createState() => _PlayPageState(
+      initialTime: gameTime,
+      initialLatitude: playerLatitude,
+      initialLongitude: playerLongitude);
 }
 
 class _PlayPageState extends State<PlayPage> {
-  // final set<Polyline> polyline = {};
-  // Location _location = Location();
   Completer<GoogleMapController> _controller = Completer();
-  // LatLng _center = const LatLng(0, 0);
-  // List<LatLng> route = [];
-
-
-
 
   final int initialTime;
   final double initialLatitude;
   final double initialLongitude;
 
-  _PlayPageState({required this.initialTime, required this.initialLatitude, required this.initialLongitude});
+  _PlayPageState(
+      {required this.initialTime,
+      required this.initialLatitude,
+      required this.initialLongitude});
 
   bool gameIsPlaying = true;
+
   void _showCupertinoAlert() {
     setState(() {
       gameIsPlaying = false;
@@ -99,6 +101,11 @@ class _PlayPageState extends State<PlayPage> {
     await _stopWatchTimer.dispose();
   }
 
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    double appendDist;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -141,11 +148,12 @@ class _PlayPageState extends State<PlayPage> {
               Container(
                   height: 200,
                   child: GoogleMap(
-                    // polylines: polyline,
+                    myLocationEnabled: true,
                     myLocationButtonEnabled: false,
                     mapType: MapType.normal,
                     initialCameraPosition: CameraPosition(
-                        target: LatLng(initialLatitude, initialLongitude), zoom: 15),
+                        target: LatLng(initialLatitude, initialLongitude),
+                        zoom: 16),
                     onMapCreated: (GoogleMapController controller) {
                       _controller.complete(controller);
                     },
